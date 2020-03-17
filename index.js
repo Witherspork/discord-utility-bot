@@ -5,7 +5,12 @@ require('dotenv').config() // load environment variables into process.env
 // GLOBALS
 //-------------------------------------------------------------------------------------
 Discord = require('discord.js') // Discord docs: https://bit.ly/39LYhac
-Client = new Discord.Client()
+Client = new Discord.Client({ autofetch: [
+    'MESSAGE_CREATE',
+    'MESSAGE_UPDATE',
+    'MESSAGE_REACTION_ADD',
+    'MESSAGE_REACTION_REMOVE',
+] })
 
 PREFIX = "!dfz" // our command prefix
 

@@ -109,11 +109,11 @@ embedObject = (date, time, timezone, userNickname, userIcon) => {
 
 createReactions = async (message) => {
   await message.react('✅')
-  // await message.react('1️⃣')
-	// await message.react('2️⃣')
-	// await message.react('3️⃣')
-	// await message.react('4️⃣')
-	// await message.react('5️⃣')
+  await message.react('1️⃣')
+	await message.react('2️⃣')
+	await message.react('3️⃣')
+	await message.react('4️⃣')
+	await message.react('5️⃣')
 }
 
 
@@ -145,6 +145,7 @@ updateAnnouncement = async (rawData) => {
   if(user.bot) return
 
 
+
   // create user data object with everything we need
   // to add or remove users from the embed
   let userEmbedUpdateData = {}
@@ -165,7 +166,6 @@ updateAnnouncement = async (rawData) => {
 
   if (userAction == 'MESSAGE_REACTION_REMOVE')
     await removeUserFromLobbyPost(userEmbedUpdateData, message, rawData)
-  
 
   //update the message with the same content plus the new embed message
   message.edit(message.content, {embed: embedMessage})
@@ -290,4 +290,43 @@ removeUserFromLobbyPost = (userEmbedUpdateData, message, rawData) => {
   embedMessage.fields[COACHES].value = embedLists.slice(15, embedLists.length).join("\n")
 
   logSuccess('User removed from lobby post!')
+}
+
+
+
+
+Client.on('messageReactionAdd', async (reactionMessage, user) => {
+    if(reactionMessage.emoji.name != "✅") {
+          balanceLobby(await reactionMessage.fetchUsers())
+    }
+});
+
+
+
+
+balanceLobby = async userMap => {
+  const users = await Array.from(userMap.keys())
+  
+  // remove id if user is a bot or a coach
+  for (let i = 0; i < users.length; i++){
+    const guildMember = await getGuildMemberFromUserID(users[i])
+
+    // remove the bot
+    if (guildMember.user.bot){
+      users.splice(users.indexOf(users[i]), 1)
+      continue
+    }
+
+
+    // remove any user that has the coach role
+    const roles = await guildMember._roles
+    
+    if (roles.includes(COACH_ID)){
+      users.splice(users.indexOf(users[i]), 1)
+      continue
+    }
+
+  }
+
+  console.log(users)
 }
