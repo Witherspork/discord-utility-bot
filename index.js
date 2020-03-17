@@ -14,6 +14,7 @@ GUILD_ID = process.env.GUILD_ID
 TIER_ONE_ID = process.env.TIER_ONE_ID
 TIER_TWO_ID = process.env.TIER_TWO_ID
 TIER_THREE_ID = process.env.TIER_THREE_ID
+COACH_ID = process.env.COACH_ID
 
 ANNOUNCEMENTS_ID = process.env.ANNOUNCEMENTS_ID
 

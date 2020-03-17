@@ -144,9 +144,6 @@ updateAnnouncement = async (rawData) => {
   // guard if user is a bot
   if(user.bot) return
 
-  
-  // let test = await getGuildMemberFromUserID(rawData.d.user_id)
-  // console.log(test._roles)
 
   // create user data object with everything we need
   // to add or remove users from the embed
@@ -154,7 +151,16 @@ updateAnnouncement = async (rawData) => {
   userEmbedUpdateData = await getUpdateData(user, message, userEmbedUpdateData)
 
 
+  // check if user is a coach
+  const  userRoles = await getGuildMemberFromUserID(rawData.d.user_id)
+  const userIsCoach = userRoles._roles.includes(COACH_ID)
+
+
   if (userAction == 'MESSAGE_REACTION_ADD')
+    if (userIsCoach) // put the coach in the coaches list
+      await addCoachToLobbyPost(userEmbedUpdateData, message, rawData)
+
+    // otherwise user is a student so put them on a team or waiting list  
     await addUserToLobbyPost(userEmbedUpdateData, message, rawData)
 
   if (userAction == 'MESSAGE_REACTION_REMOVE')
@@ -165,6 +171,46 @@ updateAnnouncement = async (rawData) => {
   message.edit(message.content, {embed: embedMessage})
 
 }
+
+
+
+
+addCoachToLobbyPost = (userEmbedUpdateData, message, rawData) => {
+
+  // guard if already in the embed
+  if (userFoundInTheEmbed(userEmbedUpdateData)) return
+
+  // combine radiant and dire
+  // push user into first available spot
+  // split the arrays back into the proper embed fields
+  // joining them back into string with line breaks
+
+  let coaches = userEmbedUpdateData
+    .coaches
+  
+  let availableSlot = coaches.findIndex( (listItem) => listItem.length == 2)
+
+  //guard if no slots available
+  if (availableSlot == -1) return
+
+  coaches[availableSlot] = `${coaches[availableSlot]} ${userEmbedUpdateData.nickname}`
+
+
+
+  // recreate embed so we can then replace parts otherwise embed is undefined
+  embedMessage = getEmbedMessage(message.embeds[0])
+  
+  // update embed which is outside of the function scope
+  embedMessage.fields[COACHES].value = coaches.slice(0, coaches.length).join("\n")
+
+
+  logSuccess('User added to lobby post!')
+}
+
+
+
+
+
 
 
 
@@ -218,18 +264,19 @@ removeUserFromLobbyPost = (userEmbedUpdateData, message, rawData) => {
   // split the arrays back into the proper embed fields
   // joining them back into string with line breaks
 
-  let bothTeams = userEmbedUpdateData
+  let embedLists = userEmbedUpdateData
     .radiantPlayers
     .concat(userEmbedUpdateData.direPlayers)
     .concat(userEmbedUpdateData.waitingList)
+    .concat(userEmbedUpdateData.coaches)
 
   
-  let userSlot = bothTeams.findIndex( (listItem) => listItem.slice(3, listItem.length) == userEmbedUpdateData.nickname)
+  let userSlot = embedLists.findIndex( (listItem) => listItem.slice(3, listItem.length) == userEmbedUpdateData.nickname)
 
   //guard if user not found
   if (userSlot == -1) return
 
-  bothTeams[userSlot] = bothTeams[userSlot].slice(0, 2)
+  embedLists[userSlot] = embedLists[userSlot].slice(0, 2)
 
 
   // recreate embed so we can then replace parts otherwise embed is undefined
@@ -237,9 +284,10 @@ removeUserFromLobbyPost = (userEmbedUpdateData, message, rawData) => {
 
 
   // update embed which is outside of the function scope
-  embedMessage.fields[RADIANT].value = bothTeams.slice(0,5).join("\n")
-  embedMessage.fields[DIRE].value = bothTeams.slice(5, 10).join("\n")
-  embedMessage.fields[WAITINGLIST].value = bothTeams.slice(10, bothTeams.length).join("\n")
+  embedMessage.fields[RADIANT].value = embedLists.slice(0,5).join("\n")
+  embedMessage.fields[DIRE].value = embedLists.slice(5, 10).join("\n")
+  embedMessage.fields[WAITINGLIST].value = embedLists.slice(10, 15).join("\n")
+  embedMessage.fields[COACHES].value = embedLists.slice(15, embedLists.length).join("\n")
 
   logSuccess('User removed from lobby post!')
 }
