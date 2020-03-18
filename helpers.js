@@ -94,9 +94,11 @@ getLobbyType = (command, lobbyTypes) => command === undefined ? lobbyTypes['norm
 
 getMessagebyID = async message_id => {
   try{
-    const channel = Client.channels.get(ANNOUNCEMENTS_ID)
-    const messages = await channel.fetchMessages({limit: 15})
-    return messages.get(message_id) === undefined ? `\n${PURPLE}Message too old to update\n` : messages.get(message_id)
+    const channel = await Client.channels.fetch(ANNOUNCEMENTS_ID)
+    const messages = await channel.fetchMessages({around: message_id, limit: 1})
+    console.log(messages)
+    const message = await messages.resolve(message_id)
+    return message === undefined ? `\n${PURPLE}Message too old to update\n` : message
   } catch(error) {
     logError(error)
   }
@@ -105,6 +107,7 @@ getMessagebyID = async message_id => {
 
 
 notValidLobbyPost = async message => {
+  console.log(message)
   if (message.content.split('\n')[0] == LOBBY_POST_CONTENT && message.author.username.split(" ")[0] == "DotaFromZero"){
     return false
   }

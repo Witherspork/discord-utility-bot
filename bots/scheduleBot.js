@@ -119,214 +119,238 @@ createReactions = async (message) => {
 
 
 
-// this is a patch due to a bug in discord on the messageReactionRemove event not working
-// https://github.com/discordjs/discord.js/issues/3941#event-3129973046
-Client.on('raw', (rawData) => {
-  // guard
-  if (!['MESSAGE_REACTION_ADD', 'MESSAGE_REACTION_REMOVE'].includes(rawData.t)) return
-  updateAnnouncement(rawData)
+Client.on('messageReactionAdd', async (messageReaction, user) => {
+  messageReaction = await messageReaction.fetch()
+  users = await messageReaction.message.reactions.cache.first()
+
+  console.log(users)
 })
 
 
 
-
-updateAnnouncement = async (rawData) => {
-
-  const message = await getMessagebyID(rawData.d.message_id)
-
-  // guard
-  if(await notValidLobbyPost(message)) return
-
-
-  const userAction = rawData.t
-  const user = await Client.fetchUser(rawData.d.user_id)
-
-  // guard if user is a bot
-  if(user.bot) return
-
-
-
-  // create user data object with everything we need
-  // to add or remove users from the embed
-  let userEmbedUpdateData = {}
-  userEmbedUpdateData = await getUpdateData(user, message, userEmbedUpdateData)
-
-
-  // check if user is a coach
-  const  userRoles = await getGuildMemberFromUserID(rawData.d.user_id)
-  const userIsCoach = userRoles._roles.includes(COACH_ID)
-
-
-  if (userAction == 'MESSAGE_REACTION_ADD')
-    if (userIsCoach) // put the coach in the coaches list
-      await addCoachToLobbyPost(userEmbedUpdateData, message, rawData)
-
-    // otherwise user is a student so put them on a team or waiting list  
-    await addUserToLobbyPost(userEmbedUpdateData, message, rawData)
-
-  if (userAction == 'MESSAGE_REACTION_REMOVE')
-    await removeUserFromLobbyPost(userEmbedUpdateData, message, rawData)
-
-  //update the message with the same content plus the new embed message
-  message.edit(message.content, {embed: embedMessage})
-
-}
-
-
-
-
-addCoachToLobbyPost = (userEmbedUpdateData, message, rawData) => {
-
-  // guard if already in the embed
-  if (userFoundInTheEmbed(userEmbedUpdateData)) return
-
-  // combine radiant and dire
-  // push user into first available spot
-  // split the arrays back into the proper embed fields
-  // joining them back into string with line breaks
-
-  let coaches = userEmbedUpdateData
-    .coaches
-  
-  let availableSlot = coaches.findIndex( (listItem) => listItem.length == 2)
-
-  //guard if no slots available
-  if (availableSlot == -1) return
-
-  coaches[availableSlot] = `${coaches[availableSlot]} ${userEmbedUpdateData.nickname}`
-
-
-
-  // recreate embed so we can then replace parts otherwise embed is undefined
-  embedMessage = getEmbedMessage(message.embeds[0])
-  
-  // update embed which is outside of the function scope
-  embedMessage.fields[COACHES].value = coaches.slice(0, coaches.length).join("\n")
-
-
-  logSuccess('User added to lobby post!')
-}
-
-
-
-
-
-
-
-
-
-addUserToLobbyPost = (userEmbedUpdateData, message, rawData) => {
-
-  // guard if already in the embed
-  if (userFoundInTheEmbed(userEmbedUpdateData)) return
-
-  // combine radiant and dire
-  // push user into first available spot
-  // split the arrays back into the proper embed fields
-  // joining them back into string with line breaks
-
-  let bothTeams = userEmbedUpdateData
-    .radiantPlayers
-    .concat(userEmbedUpdateData.direPlayers)
-    .concat(userEmbedUpdateData.waitingList)
-  
-  let availableSlot = bothTeams.findIndex( (listItem) => listItem.length == 2)
-
-  //guard if no slots available
-  if (availableSlot == -1) return
-
-  bothTeams[availableSlot] = `${bothTeams[availableSlot]} ${userEmbedUpdateData.nickname}`
-
-
-
-  // recreate embed so we can then replace parts otherwise embed is undefined
-  embedMessage = getEmbedMessage(message.embeds[0])
-  
-  // update embed which is outside of the function scope
-  embedMessage.fields[RADIANT].value = bothTeams.slice(0,5).join("\n")
-  embedMessage.fields[DIRE].value = bothTeams.slice(5, 10).join("\n")
-  embedMessage.fields[WAITINGLIST].value = bothTeams.slice(10, bothTeams.length).join("\n")
-
-  logSuccess('User added to lobby post!')
-}
-
-
-
-
-
-removeUserFromLobbyPost = (userEmbedUpdateData, message, rawData) => {
-
-  // guard if already not in the embed
-  if (!userFoundInTheEmbed(userEmbedUpdateData)) return
-
-  // combine radiant and dire
-  // push user into first available spot
-  // split the arrays back into the proper embed fields
-  // joining them back into string with line breaks
-
-  let embedLists = userEmbedUpdateData
-    .radiantPlayers
-    .concat(userEmbedUpdateData.direPlayers)
-    .concat(userEmbedUpdateData.waitingList)
-    .concat(userEmbedUpdateData.coaches)
-
-  
-  let userSlot = embedLists.findIndex( (listItem) => listItem.slice(3, listItem.length) == userEmbedUpdateData.nickname)
-
-  //guard if user not found
-  if (userSlot == -1) return
-
-  embedLists[userSlot] = embedLists[userSlot].slice(0, 2)
-
-
-  // recreate embed so we can then replace parts otherwise embed is undefined
-  embedMessage = getEmbedMessage(message.embeds[0])
-
-
-  // update embed which is outside of the function scope
-  embedMessage.fields[RADIANT].value = embedLists.slice(0,5).join("\n")
-  embedMessage.fields[DIRE].value = embedLists.slice(5, 10).join("\n")
-  embedMessage.fields[WAITINGLIST].value = embedLists.slice(10, 15).join("\n")
-  embedMessage.fields[COACHES].value = embedLists.slice(15, embedLists.length).join("\n")
-
-  logSuccess('User removed from lobby post!')
-}
-
-
-
-
-Client.on('messageReactionAdd', async (reactionMessage, user) => {
-    if(reactionMessage.emoji.name != "✅") {
-          balanceLobby(await reactionMessage.fetchUsers())
-    }
-});
-
-
-
-
-balanceLobby = async userMap => {
-  const users = await Array.from(userMap.keys())
-  
-  // remove id if user is a bot or a coach
-  for (let i = 0; i < users.length; i++){
-    const guildMember = await getGuildMemberFromUserID(users[i])
-
-    // remove the bot
-    if (guildMember.user.bot){
-      users.splice(users.indexOf(users[i]), 1)
-      continue
-    }
-
-
-    // remove any user that has the coach role
-    const roles = await guildMember._roles
-    
-    if (roles.includes(COACH_ID)){
-      users.splice(users.indexOf(users[i]), 1)
-      continue
-    }
-
-  }
+Client.on('messageReactionRemove', async (messageReaction, user) => {
+  messageReaction = await messageReaction.fetch()
+  users = await messageReaction.message.reactions.cache.first()
 
   console.log(users)
-}
+})
+
+
+// // this is a patch due to a bug in discord on the messageReactionRemove event not working
+// // https://github.com/discordjs/discord.js/issues/3941#event-3129973046
+// Client.on('raw', (rawData) => {
+//   // guard
+//   if (!['MESSAGE_REACTION_ADD', 'MESSAGE_REACTION_REMOVE'].includes(rawData.t)) return
+//   updateAnnouncement(rawData)
+// })
+
+
+
+
+
+
+// updateAnnouncement = async (rawData) => {
+
+//   const message = await getMessagebyID(rawData.d.message_id)
+
+//   // guard
+//   if(await notValidLobbyPost(message)) return
+
+
+//   const userAction = rawData.t
+//   const user = await Client.fetchUser(rawData.d.user_id)
+
+//   // guard if user is a bot
+//   if(user.bot) return
+
+
+
+//   // create user data object with everything we need
+//   // to add or remove users from the embed
+//   let userEmbedUpdateData = {}
+//   userEmbedUpdateData = await getUpdateData(user, message, userEmbedUpdateData)
+
+
+//   // check if user is a coach
+//   const  userRoles = await getGuildMemberFromUserID(rawData.d.user_id)
+//   const userIsCoach = userRoles._roles.includes(COACH_ID)
+
+
+//   if (userAction == 'MESSAGE_REACTION_ADD')
+//     if (userIsCoach) // put the coach in the coaches list
+//       await addCoachToLobbyPost(userEmbedUpdateData, message, rawData)
+
+//     // otherwise user is a student so put them on a team or waiting list  
+//     await addUserToLobbyPost(userEmbedUpdateData, message, rawData)
+
+//   if (userAction == 'MESSAGE_REACTION_REMOVE')
+//     await removeUserFromLobbyPost(userEmbedUpdateData, message, rawData)
+
+//   //update the message with the same content plus the new embed message
+//   message.edit(message.content, {embed: embedMessage})
+
+// }
+
+
+
+
+// addCoachToLobbyPost = (userEmbedUpdateData, message, rawData) => {
+
+//   // guard if already in the embed
+//   if (userFoundInTheEmbed(userEmbedUpdateData)) return
+
+//   // combine radiant and dire
+//   // push user into first available spot
+//   // split the arrays back into the proper embed fields
+//   // joining them back into string with line breaks
+
+//   let coaches = userEmbedUpdateData
+//     .coaches
+  
+//   let availableSlot = coaches.findIndex( (listItem) => listItem.length == 2)
+
+//   //guard if no slots available
+//   if (availableSlot == -1) return
+
+//   coaches[availableSlot] = `${coaches[availableSlot]} ${userEmbedUpdateData.nickname}`
+
+
+
+//   // recreate embed so we can then replace parts otherwise embed is undefined
+//   embedMessage = getEmbedMessage(message.embeds[0])
+  
+//   // update embed which is outside of the function scope
+//   embedMessage.fields[COACHES].value = coaches.slice(0, coaches.length).join("\n")
+
+
+//   logSuccess('User added to lobby post!')
+// }
+
+
+
+
+
+
+
+
+
+// addUserToLobbyPost = (userEmbedUpdateData, message, rawData) => {
+
+//   // guard if already in the embed
+//   if (userFoundInTheEmbed(userEmbedUpdateData)) return
+
+//   // combine radiant and dire
+//   // push user into first available spot
+//   // split the arrays back into the proper embed fields
+//   // joining them back into string with line breaks
+
+//   let bothTeams = userEmbedUpdateData
+//     .radiantPlayers
+//     .concat(userEmbedUpdateData.direPlayers)
+//     .concat(userEmbedUpdateData.waitingList)
+  
+//   let availableSlot = bothTeams.findIndex( (listItem) => listItem.length == 2)
+
+//   //guard if no slots available
+//   if (availableSlot == -1) return
+
+//   bothTeams[availableSlot] = `${bothTeams[availableSlot]} ${userEmbedUpdateData.nickname}`
+
+
+
+//   // recreate embed so we can then replace parts otherwise embed is undefined
+//   embedMessage = getEmbedMessage(message.embeds[0])
+  
+//   // update embed which is outside of the function scope
+//   embedMessage.fields[RADIANT].value = bothTeams.slice(0,5).join("\n")
+//   embedMessage.fields[DIRE].value = bothTeams.slice(5, 10).join("\n")
+//   embedMessage.fields[WAITINGLIST].value = bothTeams.slice(10, bothTeams.length).join("\n")
+
+//   logSuccess('User added to lobby post!')
+// }
+
+
+
+
+
+// removeUserFromLobbyPost = (userEmbedUpdateData, message, rawData) => {
+
+//   // guard if already not in the embed
+//   if (!userFoundInTheEmbed(userEmbedUpdateData)) return
+
+//   // combine radiant and dire
+//   // push user into first available spot
+//   // split the arrays back into the proper embed fields
+//   // joining them back into string with line breaks
+
+//   let embedLists = userEmbedUpdateData
+//     .radiantPlayers
+//     .concat(userEmbedUpdateData.direPlayers)
+//     .concat(userEmbedUpdateData.waitingList)
+//     .concat(userEmbedUpdateData.coaches)
+
+  
+//   let userSlot = embedLists.findIndex( (listItem) => listItem.slice(3, listItem.length) == userEmbedUpdateData.nickname)
+
+//   //guard if user not found
+//   if (userSlot == -1) return
+
+//   embedLists[userSlot] = embedLists[userSlot].slice(0, 2)
+
+
+//   // recreate embed so we can then replace parts otherwise embed is undefined
+//   embedMessage = getEmbedMessage(message.embeds[0])
+
+
+//   // update embed which is outside of the function scope
+//   embedMessage.fields[RADIANT].value = embedLists.slice(0,5).join("\n")
+//   embedMessage.fields[DIRE].value = embedLists.slice(5, 10).join("\n")
+//   embedMessage.fields[WAITINGLIST].value = embedLists.slice(10, 15).join("\n")
+//   embedMessage.fields[COACHES].value = embedLists.slice(15, embedLists.length).join("\n")
+
+//   logSuccess('User removed from lobby post!')
+// }
+
+
+
+
+// Client.on('messageReactionAdd', async (reactionMessage, user) => {
+//     if(reactionMessage.emoji.name != "✅") {
+//           balanceLobby(await reactionMessage.fetch())
+//     }
+// });
+
+
+
+
+// balanceLobby = async userMap => {
+
+//   // gather all the students user IDs
+
+//     console.log(userMap)
+
+//     const users = await Array.from(userMap.keys())
+    
+//     // remove id if user is a bot or a coach
+//     for (let i = 0; i < users.length; i++){
+//       const guildMember = await getGuildMemberFromUserID(users[i])
+
+//       // remove the bot
+//       if (guildMember.user.bot){
+//         users.splice(users.indexOf(users[i]), 1)
+//         continue
+//       }
+
+
+//       // remove any user that has the coach role
+//       const roles = await guildMember._roles
+      
+//       if (roles.includes(COACH_ID)){
+//         users.splice(users.indexOf(users[i]), 1)
+//         continue
+//       }
+
+//     }
+
+//     console.log(users)
+// }
