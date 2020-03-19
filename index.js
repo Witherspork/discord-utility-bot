@@ -1,0 +1,45 @@
+// load environment variables not passed between all dev environments
+require('dotenv').config()
+env = process.env
+
+// require helper functions file
+require('./helpers-general')
+
+
+// require the discord.js module
+Discord = require('discord.js');
+
+
+// create a new Discord client
+Client = new Discord.Client()
+
+
+// get the server as a gGild
+Guild = Client.guilds.cache.get(env.GUILD_ID)
+
+
+
+// GLOBAL variables
+// that can be passed between all dev environments
+PREFIX = '!dfz'
+
+
+
+
+// START ENTRY POINT
+//-------------------------------------------------------------------------------------
+
+
+// login method returns a promise so we can use .then and .catch
+Client.login(process.env.DISCORD_TOKEN)
+  .then( require('./controller/controller.js') ) // send user message to the controller
+  .catch( error => logError(error) )
+
+
+// when the client is ready, run this code
+// this event will only trigger one time after logging in
+Client.once('ready', () => logSuccess('Bot connected\n')) // listen for when bot logs in
+
+//-------------------------------------------------------------------------------------
+//END ENTRY POINT----------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
