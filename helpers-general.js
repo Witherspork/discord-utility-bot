@@ -38,7 +38,7 @@ logSuccess = message => console.log(`\n${GREEN}Success! ${WHITE}${message}`)
 
 
 // user input is a valid command prefix and not a bot
-validCommand = message => message.content.startsWith('!dfz') && !message.author.bot
+validCommand = message => message.content.startsWith(PREFIX) && !message.author.bot
 
 
 

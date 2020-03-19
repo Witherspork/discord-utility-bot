@@ -1,6 +1,10 @@
-// load environment variables not passed between all dev environments
+// ENVIRONMENT variables - not passed between all dev environments
 require('dotenv').config()
-env = process.env
+
+
+// GLOBAL variables - can be passed between all dev environments
+PREFIX = '!dfz'
+
 
 // require helper functions file
 require('./helpers-general')
@@ -18,14 +22,6 @@ Client = new Discord.Client()
 Guild = Client.guilds.cache.get(env.GUILD_ID)
 
 
-
-// GLOBAL variables
-// that can be passed between all dev environments
-PREFIX = '!dfz'
-
-
-
-
 // START ENTRY POINT
 //-------------------------------------------------------------------------------------
 
@@ -36,9 +32,13 @@ Client.login(process.env.DISCORD_TOKEN)
   .catch( error => logError(error) )
 
 
+
+
 // when the client is ready, run this code
 // this event will only trigger one time after logging in
 Client.once('ready', () => logSuccess('Bot connected\n')) // listen for when bot logs in
+
+
 
 //-------------------------------------------------------------------------------------
 //END ENTRY POINT----------------------------------------------------------------------
