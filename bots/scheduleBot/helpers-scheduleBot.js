@@ -1,7 +1,5 @@
-postAnnouncement = (Channel) => {
-
-  // inside a command, event listener, etc.
-  const exampleEmbed = new Discord.MessageEmbed()
+getEmbed = (Channel) => {
+  return new Discord.MessageEmbed()
     .setColor('#0099ff')
     .setTitle('Some title')
     .setURL('https://discord.js.org/')
@@ -18,7 +16,4 @@ postAnnouncement = (Channel) => {
     .setImage('https://i.imgur.com/wSTFkRM.png')
     .setTimestamp()
     .setFooter('Some footer text here', 'https://i.imgur.com/wSTFkRM.png');
-
-  return Channel.send(exampleEmbed);
-
 }

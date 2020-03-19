@@ -16,7 +16,7 @@ Discord = require('discord.js');
 
 
 // create a new Discord client
-Client = new Discord.Client()
+Client = new Discord.Client({ autofetch: ['MESSAGE_REACTION_ADD','MESSAGE_REACTION_REMOVE',] })
 
 
 // get the server as a guild object

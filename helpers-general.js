@@ -59,4 +59,4 @@ getSubCommands = (message) => message.content.split(' ').slice(2)
 
 
 // get channel by ID
-getChannel = (channel_id) => Client.channels.cache.get(channel_id)
+getChannel = (channel_id) => Client.channels.fetch(channel_id)
