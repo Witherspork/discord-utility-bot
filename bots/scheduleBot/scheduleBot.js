@@ -22,9 +22,7 @@ scheduleBot = async (message) => {
     const embed = new Discord.MessageEmbed(receivedEmbed)
       .setTitle('New title')
       .setDescription('Description after the edit')
-
-
-
+    
       test.edit(embed);
   }, 3000)
 
