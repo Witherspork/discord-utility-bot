@@ -13,7 +13,7 @@ helpBot = (message) => {
 
 	message.reply({ embed: helpMessage })
 
-	return 'Help message sent\n'
+	return 'Help message sent'
 
 }
 

@@ -1,3 +1,3 @@
 scheduleBot = (message) => {
-  logSuccess('lobby match posted')
+  return 'lobby match posted'
 }
