@@ -1,5 +1,6 @@
 // ENVIRONMENT variables - not passed between all dev environments
 require('dotenv').config()
+env = process.env // make moar shorter
 
 
 // GLOBAL variables - can be passed between all dev environments
@@ -27,7 +28,7 @@ Guild = Client.guilds.cache.get(env.GUILD_ID)
 
 
 // login method returns a promise so we can use .then and .catch
-Client.login(process.env.DISCORD_TOKEN)
+Client.login(env.DISCORD_TOKEN)
   .then( require('./controller/controller.js') ) // send user message to the controller
   .catch( error => logError(error) )
 
