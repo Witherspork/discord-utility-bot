@@ -15,6 +15,7 @@ l = (...logThis) => console.log(...logThis)
 
 
 
+
 // log pretty error message
 logError = error =>
   console.log(
@@ -47,3 +48,15 @@ validCommand = message => message.content.startsWith(PREFIX) && !message.author.
 // converts into array
 // returns the command after the prefix
 parseCommandFrom = message => message.content.split(' ')[1]
+
+
+
+
+// gets all sub commands after prefix and main command
+getSubCommands = (message) => message.content.split(' ').slice(2)
+
+
+
+
+// get channel by ID
+getChannel = (channel_id) => Client.channels.cache.get(channel_id)

@@ -33,7 +33,6 @@ const route = async message => {
     return bots[userCommand](message) 
   } 
   catch (error){
-      error.message = 'user entered an invalid command'
       logError(error)
     }
 
