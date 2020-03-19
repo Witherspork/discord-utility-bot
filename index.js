@@ -1,6 +1,6 @@
 // ENVIRONMENT variables - not passed between all dev environments
 require('dotenv').config()
-env = process.env // make moar shorter
+env = process.env // shorten for convenience
 
 
 // GLOBAL variables - can be passed between all dev environments
