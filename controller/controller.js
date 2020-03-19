@@ -11,20 +11,17 @@ const bots = { help: helpBot, lobby: scheduleBot }
 // listen for incomming messages
 Client.on('message', message => {
   
-
   // guard
   if ( !validCommand(message) ) return
 
+  // send the message to our route function
+  route(message).then(response => logSuccess(response)).catch(error => logError(error))
 
-// send the message to our route function which delegates commands to the correct bot
-route(message)
-    .then(response => logSuccess(response))
-    .catch(error => logError(error))
 })
 
 
 
-
+// delegates commands to the correct bot
 const route = async message => {
 
   // get user command after prefix
