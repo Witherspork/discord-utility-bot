@@ -19,7 +19,7 @@ Discord = require('discord.js');
 Client = new Discord.Client()
 
 
-// get the server as a gGild
+// get the server as a guild object
 Guild = Client.guilds.cache.get(env.GUILD_ID)
 
 
