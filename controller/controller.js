@@ -1,10 +1,6 @@
-// require helpers
-require('./helpers-controller')
-
-
 // require our bots
 require('../bots/helpBot')
-require('../bots/scheduleBot')
+require('../bots/scheduleBot/scheduleBot')
 
 
 // user commmand is the key
