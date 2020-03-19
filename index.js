@@ -33,12 +33,9 @@ Client.login(env.DISCORD_TOKEN)
   .catch( error => logError(error) )
 
 
-
-
 // when the client is ready, run this code
 // this event will only trigger one time after logging in
 Client.once('ready', () => logSuccess('Bot connected\n')) // listen for when bot logs in
-
 
 
 //-------------------------------------------------------------------------------------
