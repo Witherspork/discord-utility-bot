@@ -7,7 +7,7 @@ helpBot = (message) => {
 			url: 'http://getdrawings.com/free-icon/robot-icon-png-57.png',
 		},
 		footer: {
-			text: 'created by TheForce. Special Thanks to all the testers and devs <3'
+			text: 'created by TheForce'
 		},
 	}
 
