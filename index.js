@@ -25,7 +25,7 @@ Client = new Discord.Client()
 
 // login method returns a promise so we can use .then and .catch
 Client.login(env.DISCORD_TOKEN)
-  .then( require('./controller/controller.js') ) // send user message to the controller
+  .then( require('./controller.js') ) // send user message to the controller
   .catch( error => logError(error) )
 
 

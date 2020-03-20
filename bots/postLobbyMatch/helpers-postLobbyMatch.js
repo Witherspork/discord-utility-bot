@@ -23,16 +23,16 @@ getEmbed = (message) => {
 
   return new Discord.MessageEmbed()
     .setColor('#ff8c00')
-    .setTitle(`🎟️  NA Lobby Match ${date} ${time} ${timezone}  🎟️`)
+    .setTitle(`🎟️    NA  Lobby  Match  ${date}   🎟️`)
     .setThumbnail(userIcon)
+    .setDescription(`\t @ ${time}  ${timezone}`)
     .addFields(
       { name: `Posted By: ${nickname}`, value: "\u200B", inline: false },
       { name: '**__Radiant__**', value: '1.\n2.\n3.\n4.\n5.\n', inline: true },
       { name: '**__Dire__**', value: '1.\n2.\n3.\n4.\n5.\n', inline: true },
-      { name: "\u200B", value: "\u200B", inline: false},
-      { name: '**__Coaches__**', value: '1.\n2.\n3.\n4.\n5.\n', inline: false },
+      { name: "\u200B", value: "\u200B", inline: false}
     )
-    .addField('Inline field title', 'Some value here', true)
+    .addField('Coaches: ', 'TheForce, Mr. Garlic, Mastic, Journey', true)
     .setImage('https://image.flaticon.com/icons/png/128/588/588267.png')
     .setTimestamp()
     .setFooter('Smash the  ✅  if you would like to participate.\nPick any positions you are comfortable playing\nusing the reactions below');
