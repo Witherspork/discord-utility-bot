@@ -37,7 +37,7 @@ const route = async message => {
     return bots[userCommand](message) 
   } 
   catch (error){
-      logError(error)
+      l(error)
     }
 
 }
