@@ -2,7 +2,7 @@
   "name": "discord-greeter-bot",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "npx node index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js"
@@ -14,6 +14,6 @@
     "discord.js": "^12.0.0",
     "dotenv": "^8.2.0",
     "helpers": "0.0.6",
-    "node": "^13.10.1"
+    "node": "^12.16.1"
   }
 }

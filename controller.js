@@ -1,6 +1,6 @@
 // require our bots
-require('../bots/sendHelpMessage')
-require('../bots/postLobbyMatch/postLobbyMatch')
+require('./bots/sendHelpMessage')
+require('./bots/postLobbyMatch/postLobbyMatch')
 
 
 // user commmand is the key

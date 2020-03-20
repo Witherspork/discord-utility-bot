@@ -1,12 +1,12 @@
 require('./helpers-postLobbyMatch') // any function not in this file is here
 
 
-
+// get the channel where we are posting and send the embed
 postLobbyMatch = async (message) => {
 
-  const TextChannel = await getChannel(env.NA_ANNOUNCEMENTS_ID) // get the channel where we are posting
+  const TextChannel = await getChannel(env.NA_ANNOUNCEMENTS_ID) 
   
-  TextChannel.send(getEmbed(message)) // send the embed message
+  TextChannel.send(getEmbed(message))
 
 
   // user enters a string example: !dfz lobby <date> <time> <timezone> <lobbytype>

@@ -75,7 +75,7 @@ getGuildMember = (user) => getGuild(env.GUILD_ID).member(user)
 
 
 // get channel by ID
-getChannel = async channel_id => await Client.channels.fetch(channel_id)
+getChannel = channel_id => Client.channels.fetch(channel_id)
 
 
 
