@@ -1,11 +1,11 @@
 // require our bots
-require('../bots/helpBot')
-require('../bots/scheduleBot/scheduleBot')
+require('../bots/sendHelpMessage')
+require('../bots/postLobbyMatch/postLobbyMatch')
 
 
 // user commmand is the key
 // the value is our bot function 
-const bots = { help: helpBot, lobby: scheduleBot }
+const bots = { help: helpBot, lobby: postLobbyMatch }
 
 
 // listen for incomming messages
@@ -15,9 +15,13 @@ Client.on('message', message => {
   if ( !validCommand(message) ) return
 
   // send the message to our route function
-  route(message).then(response => logSuccess(response)).catch(error => logError(error))
+  route(message)
+    .then(response => logSuccess(response))
+    .catch(error => logError(error))
 
 })
+
+
 
 
 

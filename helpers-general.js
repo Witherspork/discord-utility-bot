@@ -1,4 +1,6 @@
 // these are general helpers for simple abstracted tasks
+// functions called inside any of these functions 
+// are defined here (except console.log and built-in methods)
 //--------
 
 // terminal colors to use in log messages
@@ -53,10 +55,30 @@ parseCommandFrom = message => message.content.split(' ')[1]
 
 
 // gets all sub commands after prefix and main command
-getSubCommands = (message) => message.content.split(' ').slice(2)
+getSubCommands = message => message.content.split(' ').slice(2)
+
+
+
+
+// get server by guild ID
+getGuild = guild_id => Client
+  .guilds
+  .cache
+  .get(guild_id)
+
+
+
+
+getGuildMember = (user) => getGuild(env.GUILD_ID).member(user)
 
 
 
 
 // get channel by ID
-getChannel = (channel_id) => Client.channels.fetch(channel_id)
+getChannel = async channel_id => await Client.channels.fetch(channel_id)
+
+
+
+
+// get nickname by passing the user object (message.author)
+getNickname = user => getGuildMember(user).displayName
