@@ -17,7 +17,7 @@ getEmbed = (message) => {
   // get the user nickname
   const nickname  = getNickname(message.author)
 
-  const userIcon    = message.author.displayAvatarURL()
+  const userIcon  = message.author.displayAvatarURL()
 
 
 
