@@ -1,29 +1,22 @@
-// key value pair command: bot function
-const bots = {
-  help: helpBot,
-  lobby: scheduleBot
-}
+/* listen for messages 
+route the command to a bot function */ 
+
+require('./bots/sendHelpMessage')
+require('./bots/postLobbyMatch/postLobbyMatch')
 
 
+bots = { help: sendHelpMessage, lobby: postLobbyMatch }
 
-// listen for incomming messages
+
 Client.on('message', message => {
-  
-  // guard
-  if (notACommand(message)) return
 
-  Guild = Client.guilds.get(GUILD_ID)
-  CommandArgs = stringToArray(message)
+  if ( !validCommand(message) ) return // guard
   
-  route(message) // send the message to our route function which delegates to the correct bot function
+  route(message)
     .then(response => logSuccess(response))
     .catch(error => logError(error))
+    
 })
 
 
-let command, messageArray
-
-const route = async message => {
-  command = validateCommand(message, bots)
-  return bots[command](message)
-}
+const route = async message => bots[getCommand(message)](message)
