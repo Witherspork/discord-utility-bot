@@ -35,7 +35,7 @@ const getEmbedData = (message) => {
   userData.date       = subCommands[0]
   userData.time       = subCommands[1]
   userData.timezone   = subCommands[2]
-  userData.lobbyType  = subCommands[3]
+  userData.lobbyType  = subCommands[3] || 'normal'
 
 
   userData.nickname   = getNickname(message.author)
@@ -56,7 +56,7 @@ const getEmbed = (message) => {
     .setColor('#ff8c00')
     .setTitle(`🎟️   ${userData.date} @ ${userData.time} ${userData.timezone}   🎟️`)
     .setThumbnail(userData.userIcon)
-    .setDescription(`\t `)
+    .setDescription(`${userData.lobbyType} lobby match`)
     .addFields(
       { name: `Posted By: ${userData.nickname}`, value: "\u200B", inline: false },
       { name: '**__Radiant__**', value: '1.\n2.\n3.\n4.\n5.\n', inline: true },
