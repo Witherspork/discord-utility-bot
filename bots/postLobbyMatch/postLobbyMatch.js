@@ -1,28 +1,53 @@
-require('./helpers-postLobbyMatch') // any function not in this file is here
+/* parse users commands 
+create embed message
+bot reacts with 1,2,3,4,5 emojis
+put users who reacted on a list
+sort the list using the auto balancer */
+
+const { 
+  postLobby, 
+  addReactions, 
+  getEmbed, 
+  getReactions, 
+  updateEmbed,
+  getTeamLists,
+  getCoachList } = require('./helpers-postLobbyMatch')
 
 
-// get the channel where we are posting and send the embed
+
+
 postLobbyMatch = async (message) => {
 
-  const TextChannel = await getChannel(env.NA_ANNOUNCEMENTS_ID) 
-  
-  TextChannel.send(getEmbed(message))
-
-
-  // user enters a string example: !dfz lobby <date> <time> <timezone> <lobbytype>
-  
-  // a post is created in the na-announcements channel
-  // it shows 2 lists of teams
-
-  // students fill all lists except coaches
-  // coaches only fill the coach list
-
-  // the list will add students as they react
-  // we need to keep a running list of all students who reacted
-
-  
-
+  const lobbyPost = await postLobby(message)
+  addReactions(lobbyPost)
 
   return 'lobby match posted'
+
 }
 
+
+
+
+Client.on('raw', async (rawData) => {
+
+  if (!['MESSAGE_REACTION_ADD', 'MESSAGE_REACTION_REMOVE'].includes(rawData.t)) return
+
+  const user = await getUser(rawData.d.user_id)
+
+  if (user.bot) return
+
+  TextChannel           = await getChannel(env.NA_ANNOUNCEMENTS_ID)
+  
+  const announcements   = await TextChannel.messages.fetch({ limit: 10 })
+
+  const lobbyPost       = announcements.find(announcement => announcement.id == rawData.d.message_id)
+
+  const reactions       = await getReactions(lobbyPost)
+
+  const teams           = await getTeamLists(reactions, lobbyPost)
+
+  const coaches         = await getCoachList(reactions, lobbyPost)
+
+  updateEmbed(lobbyPost, coaches, teams)
+
+})

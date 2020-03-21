@@ -1,4 +1,4 @@
-helpBot = (message) => {
+sendHelpMessage = (message) => {
 	
   let helpMessage = new Discord.MessageEmbed()
     .setColor('#0099ff')
@@ -7,8 +7,8 @@ helpBot = (message) => {
     .setThumbnail('http://getdrawings.com/free-icon/robot-icon-png-57.png')
     .setFooter('created by TheForce')
 
-	message.reply(helpMessage)
 
+	message.reply(helpMessage)
 	return 'Help message sent'
 
 }
