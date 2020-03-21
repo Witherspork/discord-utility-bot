@@ -2,25 +2,30 @@
 is in helpers-general.js */
 
 const postLobby = async (message) => {
+  
   const TextChannel = await getChannel(env.NA_ANNOUNCEMENTS_ID)
+
   return TextChannel.send('NA Lobby Match', getEmbed(message))
+
 }
 
 
 
 
 const addReactions = async (lobbyPost) => {
+
   await lobbyPost.react('1️⃣')
 	await lobbyPost.react('2️⃣')
 	await lobbyPost.react('3️⃣')
 	await lobbyPost.react('4️⃣')
 	await lobbyPost.react('5️⃣')
+
 }
 
 
 
 
-// returns coaches command and get user details
+// returns data from the coach who posts the lobby announcement
 const getEmbedData = (message) => {
 
   let userData = {}
@@ -67,26 +72,34 @@ const getEmbed = (message) => {
 
 
 
-const getReactions = async (rawData) => {
+const getReactions = async (lobbyPost) => {
 
-  TextChannel = await getChannel(env.NA_ANNOUNCEMENTS_ID)
+  let emojis = await lobbyPost.reactions.cache // map of reactionManagers
 
-  const latestMessages = await TextChannel.messages.fetch({ limit: 5 })
+  let reactions = {}
 
-  const message = latestMessages.find(message => message.id == rawData.d.message_id)
+  for (const emoji of emojis.entries()){
+    const emojiChar = emoji[0]
+    const userReactions = emoji[1] // map of reactionUserManagers (each key is the user id)
 
-  let emojis = await message.reactions.cache // gets all emojis with user data (returns a reactionManager)
+    const users = await userReactions.users.fetch({limit: 20})
 
-  emojis.forEach( (emoji) => l('test'))
+    const user_ids = await users.keys()
 
-  // let users = await reactionManager.users.fetch({limit: 20}) //do this for each reaction
+    reactions[emoji[0]] = Array.from(user_ids)
+  }
+
+  return reactions
 
 }
 
 
 
 
-const updateEmbed = (reactions) => {
+const updateEmbed = (reactions, lobbyPost) => {
+  
+  l(reactions)
+  l(lobbyPost)
 
 }
 

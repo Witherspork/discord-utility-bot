@@ -64,6 +64,11 @@ getSubCommands = message => message.content.split(' ').slice(2)
 
 
 
+getUser = user_id => Client.users.fetch(user_id)
+
+
+
+
 // get server by guild ID
 getGuild = guild_id => Client
   .guilds
