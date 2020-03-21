@@ -35,8 +35,8 @@ logSuccess = message => console.log(`\n${GREEN}Success! ${WHITE}${message}`)
 
 
 
-isCoach = message => {
-  const roles = getGuildMember(message.author)._roles
+isCoach = user => {
+  const roles = getGuildMember(user)._roles
   return roles.includes(env.COACH_ID)
 }
 
@@ -64,7 +64,7 @@ getSubCommands = message => message.content.split(' ').slice(2)
 
 
 
-getUser = user_id => Client.users.fetch(user_id)
+getUser = async user_id => await Client.users.fetch(user_id)
 
 
 
@@ -79,14 +79,31 @@ getGuild = guild_id => Client
 
 
 // get specific user info within the discord server (they call it a guild)
-getGuildMember = (user) => getGuild(env.GUILD_ID).member(user)
-
-
-
-
-getChannel = channel_id => Client.channels.fetch(channel_id)
+getGuildMember = user => getGuild(env.GUILD_ID).member(user)
 
 
 
 
 getNickname = user => getGuildMember(user).displayName
+
+
+
+
+getTier = guildMember => {
+
+  const tiers = {1: env.TIER_ONE_ID, 2: env.TIER_TWO_ID, 3: env.TIER_THREE_ID}
+  const roles = guildMember._roles
+  let tier = 0
+
+  for (const key in tiers) {
+    if (roles.includes(tiers[key])) tier = key
+  }
+  
+  return tier
+  
+}
+
+
+
+
+getChannel = channel_id => Client.channels.fetch(channel_id)

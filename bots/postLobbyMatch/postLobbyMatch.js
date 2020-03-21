@@ -4,7 +4,14 @@ bot reacts with 1,2,3,4,5 emojis
 put users who reacted on a list
 sort the list using the auto balancer */
 
-const { postLobby, addReactions, getEmbed, getReactions, updateEmbed } = require('./helpers-postLobbyMatch')
+const { 
+  postLobby, 
+  addReactions, 
+  getEmbed, 
+  getReactions, 
+  updateEmbed,
+  getTeamLists,
+  getCoachList } = require('./helpers-postLobbyMatch')
 
 
 
@@ -37,6 +44,10 @@ Client.on('raw', async (rawData) => {
 
   const reactions       = await getReactions(lobbyPost)
 
-  updateEmbed(reactions, lobbyPost)
+  const teams           = await getTeamLists(reactions, lobbyPost)
+
+  const coaches         = await getCoachList(reactions, lobbyPost)
+
+  updateEmbed(lobbyPost, coaches, teams)
 
 })
