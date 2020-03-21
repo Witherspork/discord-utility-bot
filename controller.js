@@ -1,43 +1,22 @@
-// require our bots
+/* listen for messages 
+route the command to a bot function */ 
+
 require('./bots/sendHelpMessage')
 require('./bots/postLobbyMatch/postLobbyMatch')
 
 
-// user commmand is the key
-// the value is our bot function 
-const bots = { help: helpBot, lobby: postLobbyMatch }
+bots = { help: sendHelpMessage, lobby: postLobbyMatch }
 
 
-// listen for incomming messages
 Client.on('message', message => {
-  
-  // guard
-  if ( !validCommand(message) ) return
 
-  // send the message to our route function
+  if ( !validCommand(message) ) return // guard
+  
   route(message)
     .then(response => logSuccess(response))
     .catch(error => logError(error))
-
+    
 })
 
 
-
-
-
-// delegates commands to the correct bot
-const route = async message => {
-
-  // get user command after prefix
-  const userCommand = parseCommandFrom(message)
-
-  // try to call a bot with the users command
-  // pass message to the bot function if commmand is valid
-  try { 
-    return bots[userCommand](message) 
-  } 
-  catch (error){
-      l(error)
-    }
-
-}
+const route = async message => bots[getCommand(message)](message)

@@ -1,19 +1,14 @@
-// these are general helpers for simple abstracted tasks
-// functions called inside any of these functions 
-// are defined here (except console.log and built-in methods)
-//--------
+// Why waste time say lot word when few word do trick
+l = (...logThis) => console.log(...logThis)
+
+
+
 
 // terminal colors to use in log messages
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 WHITE='\033[1;37m'
 PURPLE='\033[0;35m'
-
-
-
-
-// Why waste time say lot word when few word do trick
-l = (...logThis) => console.log(...logThis)
 
 
 
@@ -40,16 +35,25 @@ logSuccess = message => console.log(`\n${GREEN}Success! ${WHITE}${message}`)
 
 
 
+isCoach = message => {
+  const roles = getGuildMember(message.author)._roles
+  return roles.includes(env.COACH_ID)
+}
+
+
+
+
 // user input is a valid command prefix and not a bot
-validCommand = message => message.content.startsWith(PREFIX) && !message.author.bot
+validCommand = message => message.content.startsWith(PREFIX) 
+  && !message.author.bot 
+  && bots.hasOwnProperty(message.content.split(' ')[1]) // command is a key in our bots object in controller.js
+  && isCoach(message)
 
 
 
 
-// takes a users message
-// converts into array
 // returns the command after the prefix
-parseCommandFrom = message => message.content.split(' ')[1]
+getCommand = message => message.content.split(' ')[1]
 
 
 
@@ -69,16 +73,15 @@ getGuild = guild_id => Client
 
 
 
+// get specific user info within the discord server (they call it a guild)
 getGuildMember = (user) => getGuild(env.GUILD_ID).member(user)
 
 
 
 
-// get channel by ID
 getChannel = channel_id => Client.channels.fetch(channel_id)
 
 
 
 
-// get nickname by passing the user object (message.author)
 getNickname = user => getGuildMember(user).displayName
