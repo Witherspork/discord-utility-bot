@@ -76,17 +76,21 @@ const getReactions = async (lobbyPost) => {
 
   let emojis = await lobbyPost.reactions.cache // map of reactionManagers
 
+
   let reactions = {}
 
   for (const emoji of emojis.entries()){
-    const emojiChar = emoji[0]
+
+    const emojiCharacter = emoji[0]
+
     const userReactions = emoji[1] // map of reactionUserManagers (each key is the user id)
 
     const users = await userReactions.users.fetch({limit: 20})
 
     const user_ids = await users.keys()
 
-    reactions[emoji[0]] = Array.from(user_ids)
+    reactions[emojiCharacter] = Array.from(user_ids)
+
   }
 
   return reactions
@@ -96,11 +100,53 @@ const getReactions = async (lobbyPost) => {
 
 
 
-const updateEmbed = (reactions, lobbyPost) => {
+const updateEmbed = async (reactions, lobbyPost) => {
+
+  let players = {}
   
-  l(reactions)
-  l(lobbyPost)
+  let coaches = []
+
+  for (const emoji in reactions) {
+    
+    const usersArray = reactions[emoji]
+
+    for (const index in usersArray) {
+
+      const user_id   = await usersArray[index]
+
+      const user      = await getUser(user_id)
+
+      if (user.bot) continue
+
+      const nickname  =  await getNickname(user)
+
+      if ( isCoach(user) ) {
+        coaches.push(nickname)
+        continue
+      }
+      
+      players[nickname] = {roles: [].push(emoji)}
+
+    } 
+
+    l(players)
+
+  }
+
+
+
+
+
+
+  // const exampleEmbed = new Discord.MessageEmbed(lobbyPost.embeds[0])
+	// .setTitle('Some title')
+	// .setDescription('Description after the edit');
+  
+  // lobbyPost.edit('this is my new message', exampleEmbed)
 
 }
+
+
+
 
 module.exports = {postLobby, addReactions, getEmbed, getReactions, updateEmbed}
