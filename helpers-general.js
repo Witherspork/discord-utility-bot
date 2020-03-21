@@ -89,4 +89,21 @@ getNickname = user => getGuildMember(user).displayName
 
 
 
+getTier = guildMember => {
+
+  const tiers = {1: env.TIER_ONE_ID, 2: env.TIER_TWO_ID, 3: env.TIER_THREE_ID}
+  const roles = guildMember._roles
+  let tier = 0
+
+  for (const key in tiers) {
+    if (roles.includes(tiers[key])) tier = key
+  }
+  
+  return tier
+  
+}
+
+
+
+
 getChannel = channel_id => Client.channels.fetch(channel_id)

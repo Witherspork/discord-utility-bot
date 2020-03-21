@@ -1,5 +1,5 @@
-/* Any function not defined here 
-is in helpers-general.js */
+const {autobalance} = require('./autobalance.js')
+
 
 const postLobby = async (message) => {
   
@@ -61,9 +61,9 @@ const getEmbed = (message) => {
       { name: `Posted By: ${userData.nickname}`, value: "\u200B", inline: false },
       { name: '**__Radiant__**', value: '1.\n2.\n3.\n4.\n5.\n', inline: true },
       { name: '**__Dire__**', value: '1.\n2.\n3.\n4.\n5.\n', inline: true },
-      { name: "\u200B", value: "\u200B", inline: false}
+      { name: "\u200B", value: "\u200B", inline: false},
+      { name: 'Coaches: ', value: 'TheForce, Mr. Garlic, Mastic, Journey', inline: true}
     )
-    .addField('Coaches: ', 'TheForce, Mr. Garlic, Mastic, Journey', true)
     .setImage('https://image.flaticon.com/icons/png/128/588/588267.png')
     .setFooter('Pick any positions you are comfortable playing using the reactions below')
 
@@ -99,10 +99,48 @@ const getReactions = async (lobbyPost) => {
 
 
 
+const getTeamLists = async (reactions, lobbyPost) => {
 
-const updateEmbed = async (reactions, lobbyPost) => {
+  let players     = {}
 
-  let players = {}
+  let rolesSelected       = []
+
+  let positions   = { '1️⃣': 1, '2️⃣': 2, '3️⃣': 3, '4️⃣': 4, '5️⃣': 5 }
+
+  for (const emoji in reactions) {
+    
+    const usersArray = reactions[emoji]
+
+    for (const index in usersArray) {
+
+      const user_id     = await usersArray[index]
+      const user        = await getUser(user_id)
+
+      if ( user.bot || isCoach(user) ) continue
+
+      const nickname  =  await getNickname(user)
+      const guildMember = await getGuildMember(user) 
+      const tier        = await getTier(guildMember)
+      const position    = positions[emoji]
+
+      if ( players.hasOwnProperty(nickname) ) {
+        players[nickname]['rolesSelected'].push(position)
+        continue
+      }
+
+      players[nickname] = {tier: tier, rolesSelected: [position]}
+
+    } 
+
+  }
+
+  return autobalance(players)
+}
+
+
+
+
+const getCoachList = async (reactions, lobbyPost) => {
   
   let coaches = []
 
@@ -112,41 +150,52 @@ const updateEmbed = async (reactions, lobbyPost) => {
 
     for (const index in usersArray) {
 
-      const user_id   = await usersArray[index]
-
-      const user      = await getUser(user_id)
+      const user_id = await usersArray[index]
+      const user = await getUser(user_id)
 
       if (user.bot) continue
 
       const nickname  =  await getNickname(user)
 
-      if ( isCoach(user) ) {
+      if ( isCoach(user) && !coaches.includes(nickname) ) {
         coaches.push(nickname)
         continue
       }
-      
-      players[nickname] = {roles: [].push(emoji)}
 
     } 
 
-    l(players)
-
   }
 
+  return coaches
+}
 
 
 
 
+const updateEmbed = (lobbyPost, coaches, teams) => {
 
-  // const exampleEmbed = new Discord.MessageEmbed(lobbyPost.embeds[0])
-	// .setTitle('Some title')
-	// .setDescription('Description after the edit');
+  const coachList = coaches.join(', ') || "\u200B"
   
-  // lobbyPost.edit('this is my new message', exampleEmbed)
+  const radiant = teams[0]['radiant']
+  const dire = teams[1]['dire']
+
+  const newEmbed = new Discord.MessageEmbed(lobbyPost.embeds[0])
+    .spliceFields(1, 1, { name: '**__Radiant__**', value: `1. ${radiant['1']}\n2. ${radiant['2']}\n3. ${radiant['3']}\n4. ${radiant['4']}\n5. ${radiant['5']}\n`, inline: true })
+    .spliceFields(2, 1, { name: '**__Dire__**', value: `1. ${dire['1']}\n2. ${dire['2']}\n3. ${dire['3']}\n4. ${dire['4']}\n5. ${dire['5']}\n`, inline: true })
+    .spliceFields(4, 1, { name: 'Coaches: ', value: coachList, inline: true})
+  
+  lobbyPost.edit('this is my new message', newEmbed)
 
 }
 
 
 
 
-module.exports = {postLobby, addReactions, getEmbed, getReactions, updateEmbed}
+module.exports = {
+  postLobby, 
+  addReactions, 
+  getEmbed, 
+  getReactions, 
+  updateEmbed,
+  getTeamLists,
+  getCoachList }
