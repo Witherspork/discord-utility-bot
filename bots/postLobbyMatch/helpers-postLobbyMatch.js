@@ -62,7 +62,7 @@ const getEmbed = (message) => {
       { name: '**__Radiant__**', value: '1.\n2.\n3.\n4.\n5.\n', inline: true },
       { name: '**__Dire__**', value: '1.\n2.\n3.\n4.\n5.\n', inline: true },
       { name: "\u200B", value: "\u200B", inline: false},
-      { name: 'Coaches: ', value: 'TheForce, Mr. Garlic, Mastic, Journey', inline: true}
+      { name: 'Coaches: ', value: "\u200B", inline: true}
     )
     .setImage('https://image.flaticon.com/icons/png/128/588/588267.png')
     .setFooter('Pick any positions you are comfortable playing using the reactions below')
