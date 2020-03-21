@@ -5,7 +5,7 @@ const postLobby = async (message) => {
   
   const TextChannel = await getChannel(env.NA_ANNOUNCEMENTS_ID)
 
-  return TextChannel.send('NA Lobby Match', getEmbed(message))
+  return TextChannel.send("Hey guys, we're hosting an NA Lobby Match\nPlease react if you would like to participate", getEmbed(message))
 
 }
 
@@ -184,7 +184,7 @@ const updateEmbed = (lobbyPost, coaches, teams) => {
     .spliceFields(2, 1, { name: '**__Dire__**', value: `1. ${dire['1']}\n2. ${dire['2']}\n3. ${dire['3']}\n4. ${dire['4']}\n5. ${dire['5']}\n`, inline: true })
     .spliceFields(4, 1, { name: 'Coaches: ', value: coachList, inline: true})
   
-  lobbyPost.edit('this is my new message', newEmbed)
+  lobbyPost.edit("Hey guys, we're hosting an NA Lobby Match\nPlease react if you would like to participate", newEmbed)
 
 }
 
