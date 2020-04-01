@@ -10,7 +10,7 @@ bots = { help: sendHelpMessage, lobby: postLobbyMatch }
 
 Client.on('message', message => {
 
-  if ( !validCommand(message) ) return // guard
+  if ( !validCommand(message) ) return
   
   route(message)
     .then(response => logSuccess(response))

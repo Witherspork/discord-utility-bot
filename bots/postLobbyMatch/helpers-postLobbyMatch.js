@@ -64,7 +64,7 @@ const getEmbed = (message) => {
       { name: "\u200B", value: "\u200B", inline: false},
       { name: 'Coaches: ', value: "\u200B", inline: true}
     )
-    .setImage('https://image.flaticon.com/icons/png/128/588/588267.png')
+    //.setImage('https://image.flaticon.com/icons/png/128/588/588267.png')
     .setFooter('Pick any positions you are comfortable playing using the reactions below')
 
 }
