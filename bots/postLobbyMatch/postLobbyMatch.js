@@ -32,6 +32,11 @@ Client.on('raw', async (rawData) => {
 
   if (!['MESSAGE_REACTION_ADD', 'MESSAGE_REACTION_REMOVE'].includes(rawData.t)) return
 
+  // add rawData.t to the getTeamLists function
+  // check if adding or removing
+  // if adding check to see if the lists are full
+  // if the lists are full do nothing (for now)
+
   const user = await getUser(rawData.d.user_id)
 
   if (user.bot) return
