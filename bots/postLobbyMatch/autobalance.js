@@ -1,5 +1,5 @@
 const autobalance = (players) => {
-
+console.log({players})
   const newObj = {}
 
   const playersCopy = Object.assign(newObj, players);
@@ -106,29 +106,29 @@ const autobalance = (players) => {
   // this is just for pretty output you don't actually need these for-loops
   // commenting out will output only the names of each person
   //-----------------------------------------
-  // for(key in team.radiant){
-  //   let playerName = team.radiant[key]
+  for(key in team.radiant){
+    let playerName = team.radiant[key]
 
-  //   if (playersCopy[playerName] == undefined)
-  //     continue
+    if (playersCopy[playerName] == undefined)
+      continue
 
-  //   let playerObj = playersCopy[playerName]
-  //   playerObj.name = playerName
-  //   delete playersCopy[playerName]['rolesSelected']
-  //   team.radiant[key] = playersCopy[playerName]
-  // }
+    let playerObj = playersCopy[playerName]
+    playerObj.name = playerName
+    delete playersCopy[playerName]['rolesSelected']
+    team.radiant[key] = playersCopy[playerName]
+  }
 
-  // for(key in team.dire){
-  //   let playerName = team.dire[key]
+  for(key in team.dire){
+    let playerName = team.dire[key]
 
-  //   if (playersCopy[playerName] == undefined)
-  //     continue
+    if (playersCopy[playerName] == undefined)
+      continue
 
-  //   let playerObj = playersCopy[playerName]
-  //   playerObj.name = playerName
-  //   delete playersCopy[playerName]['rolesSelected']
-  //   team.dire[key] = playersCopy[playerName]
-  // }
+    let playerObj = playersCopy[playerName]
+    playerObj.name = playerName
+    delete playersCopy[playerName]['rolesSelected']
+    team.dire[key] = playersCopy[playerName]
+  }
   //-------------------------------------------
   //-------------------------------------------
 
