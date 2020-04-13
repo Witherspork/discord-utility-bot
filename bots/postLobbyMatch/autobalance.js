@@ -1,5 +1,5 @@
 const autobalance = (players) => {
-console.log({players})
+
   const newObj = {}
 
   const playersCopy = Object.assign(newObj, players);
