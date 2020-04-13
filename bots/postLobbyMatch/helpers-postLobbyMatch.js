@@ -3,7 +3,7 @@ const {autobalance} = require('./autobalance.js')
 
 const postLobby = async (message) => {
   
-  const TextChannel = await getChannel(env.NA_ANNOUNCEMENTS_ID)
+  const TextChannel = await getChannel(env.ANNOUNCEMENTS_ID)
 
   const region = getSubCommands(message)[0]
 

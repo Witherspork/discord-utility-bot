@@ -41,7 +41,7 @@ Client.on('raw', async (rawData) => {
 
   if (user.bot) return
 
-  TextChannel           = await getChannel(env.NA_ANNOUNCEMENTS_ID)
+  TextChannel           = await getChannel(env.ANNOUNCEMENTS_ID)
   
   const announcements   = await TextChannel.messages.fetch({ limit: 10 })
 
