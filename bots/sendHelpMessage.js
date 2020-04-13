@@ -15,9 +15,9 @@ sendHelpMessage = (message) => {
 
 
 const description = `
-Commands: !dfz lobby <date> <time> <timezone> <lobbytype>
+Commands: !dfz lobby <region> <date> <time> <timezone> <lobbytype>
 
-example: !dfz lobby 3/15/20 9:00pm EST meme
+example: !dfz lobby NA 3/15/20 9:00pm EST meme
 
 lobby types: meme, open or just leave blank
 `
