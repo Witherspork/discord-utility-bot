@@ -8,10 +8,8 @@ const {
   postLobby, 
   addReactions, 
   getEmbed, 
-  getReactions, 
-  updateEmbed,
-  getTeamLists,
-  getCoachList } = require('./helpers-postLobbyMatch')
+  updateEmbed 
+} = require('./helpers-postLobbyMatch')
 
 
 
@@ -32,6 +30,13 @@ Client.on('raw', async (rawData) => {
 
   if (!['MESSAGE_REACTION_ADD', 'MESSAGE_REACTION_REMOVE'].includes(rawData.t)) return
 
+  // add rawData.t to the getTeamLists function
+  // check if adding or removing
+  // if adding check to see if the lists are full
+  // if the lists are full do nothing (for now)
+
+  const reactionType = rawData.t
+
   const user = await getUser(rawData.d.user_id)
 
   if (user.bot) return
@@ -42,12 +47,6 @@ Client.on('raw', async (rawData) => {
 
   const lobbyPost       = announcements.find(announcement => announcement.id == rawData.d.message_id)
 
-  const reactions       = await getReactions(lobbyPost)
-
-  const teams           = await getTeamLists(reactions, lobbyPost)
-
-  const coaches         = await getCoachList(reactions, lobbyPost)
-
-  updateEmbed(lobbyPost, coaches, teams)
+  updateEmbed(lobbyPost, reactionType, user)
 
 })
