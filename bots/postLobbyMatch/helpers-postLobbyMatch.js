@@ -69,6 +69,7 @@ const updateEmbed = (lobbyPost, reactionType, user) => {
 
   // get current Sign ups
   let signUps = lobbyPost.embeds[0].fields[1].value
+  let description = lobbyPost.embeds[0].description
 
   // convert the string value to an array using the \n as a separator
   signUps = signUps.split('\n')
@@ -95,7 +96,7 @@ const updateEmbed = (lobbyPost, reactionType, user) => {
   const newEmbed = new Discord.MessageEmbed(lobbyPost.embeds[0])
     .spliceFields(1, 1, { name: 'Sign ups', value: signUps, inline: true })
   
-  lobbyPost.edit("Hey guys, we're hosting an NA Lobby Match\nPlease react if you would like to participate", newEmbed)
+  lobbyPost.edit(description, newEmbed)
 
 }
 
