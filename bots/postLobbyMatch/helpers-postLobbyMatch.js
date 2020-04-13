@@ -1,6 +1,3 @@
-const {autobalance} = require('./autobalance.js')
-
-
 const postLobby = async (message) => {
   
   const TextChannel = await getChannel(env.ANNOUNCEMENTS_ID)
