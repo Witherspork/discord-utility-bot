@@ -1,11 +1,1 @@
-[![Run on Repl.it](https://repl.it/badge/github/sojohnnysaid/discord-utility-bot)](https://repl.it/github/sojohnnysaid/discord-utility-bot)
-
-
-## getting started
-1. click the 'run on repl.it' badge in this readme at the top
-2. inside your repl IDE choose Node js and hit 'Done'
-
-
-## how to run the repl
-3. create a .env using the example.env as a template
-4. click the run button
+A project I worked on for the DotaFromZero discord server. The bot was used to gather members who wanted to join up and play lobbies. It was super simple and served it's purposed while I was a member. I am grateful for this project because it taught me how to setup heroku with github hub, as well as the popular "gitflow." This project originally had a dev, test and prod branch, which pushed to 3 different heroku dynos. It was really cool to get all of this working. After this project I pursued my own Discord server where I used this workflow to manage several developers on a project for a non-profit on the other side of the world. Never thought a simple bot could lead to so much!
